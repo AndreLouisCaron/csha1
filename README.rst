@@ -13,4 +13,4 @@ E. Jones [1]_.  This library provides only minor syntactic modifications to
 Paul's code: Doxygen comments for HTML reference, additional help functions,
 etc.
 
-.. _[1]: http://www.packetizer.com/security/sha1/
+.. [1]: http://www.packetizer.com/security/sha1/
