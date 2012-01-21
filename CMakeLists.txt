@@ -6,27 +6,39 @@ cmake_minimum_required(VERSION 2.6)
 
 project(csha1)
 
-  # base paths to source files.
-set(code_path ${CMAKE_CURRENT_SOURCE_DIR}/code)
-set(demo_path ${CMAKE_CURRENT_SOURCE_DIR}/demo)
+function(add_api_documentation target)
+  if(DOXYGEN_EXECUTABLE)
+    add_custom_target(
+      ${target}
+      COMMAND
+        ${DOXYGEN_EXECUTABLE}
+      WORKING_DIRECTORY
+        ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT
+        "Compiling documentation."
+      VERBATIM
+    )
+  endif()
+endfunction()
 
-  # core library and c++ wrappers.
-file(GLOB code_headers ${code_path}/*.h ${code_path}/*.hpp)
-file(GLOB code_sources ${code_path}/*.c ${code_path}/*.cpp)
-add_library(sha1
-  STATIC ${code_sources} ${code_headers})
+# Put all libraries and executables in the build folder root.
+set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
-  # build demo programs on standalone build.
+add_subdirectory(code)
+
+# Optional targets (skip when building as a dependency).
 if(${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME})
 
-  include_directories(${code_path})
+  # Build API documentation.
+  find_package(Doxygen QUIET)
+  configure_file(
+    ${CMAKE_SOURCE_DIR}/help/Doxyfile
+    ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
+  add_api_documentation(doc)
 
-  add_executable(demo ${demo_path}/demo.cpp)
-  target_link_libraries(demo sha1)
-  add_dependencies(demo sha1)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/code)
 
-  add_executable(sha ${demo_path}/sha.cpp)
-  target_link_libraries(sha sha1)
-  add_dependencies(sha sha1)
+  add_subdirectory(demo)
 
 endif()
