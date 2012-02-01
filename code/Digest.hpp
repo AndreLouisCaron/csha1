@@ -63,6 +63,11 @@ namespace sha1 {
         }
 
     public:
+        void clear ()
+        {
+            ::sha1_clear(&myBackend);
+        }
+
         void update ( const void * data, std::size_t size )
         {
             ::sha1_update(
